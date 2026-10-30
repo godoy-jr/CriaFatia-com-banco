@@ -1,0 +1,81 @@
+// CriaFatia - cole este conteúdo em https://dbdiagram.io
+
+Table tamanhos {
+  id smallint [pk, increment]
+  codigo varchar(20) [not null, unique]
+  nome varchar(50) [not null]
+  quantidade_fatias tinyint [not null]
+  preco_base decimal(10,2) [not null]
+  ativo boolean [not null, default: true]
+}
+
+Table massas {
+  id smallint [pk, increment]
+  codigo varchar(20) [not null, unique]
+  nome varchar(50) [not null]
+  acrescimo decimal(10,2) [not null, default: 0]
+  ativo boolean [not null, default: true]
+}
+
+Table molhos {
+  id smallint [pk, increment]
+  codigo varchar(20) [not null, unique]
+  nome varchar(50) [not null]
+  acrescimo decimal(10,2) [not null, default: 0]
+  ativo boolean [not null, default: true]
+}
+
+Table ingredientes {
+  id smallint [pk, increment]
+  codigo varchar(40) [not null, unique]
+  nome varchar(80) [not null]
+  acrescimo decimal(10,2) [not null, default: 0]
+  ativo boolean [not null, default: true]
+}
+
+Table pedidos {
+  id bigint [pk, increment]
+  codigo char(12) [not null, unique]
+  status varchar(20) [not null, default: 'RECEBIDO', note: 'RECEBIDO, EM_PREPARO, PRONTO, ENTREGUE ou CANCELADO']
+  valor_total decimal(10,2) [not null]
+  observacao varchar(500)
+  criado_em datetime [not null]
+  atualizado_em datetime [not null]
+}
+
+Table pizzas {
+  id bigint [pk, increment]
+  pedido_id bigint [not null]
+  tamanho_id smallint [not null]
+  massa_id smallint [not null]
+  molho_id smallint [not null]
+  com_azeitona boolean [not null, default: false]
+  com_oregano boolean [not null, default: false]
+  preco_tamanho decimal(10,2) [not null]
+  acrescimo_massa decimal(10,2) [not null, default: 0]
+  acrescimo_molho decimal(10,2) [not null, default: 0]
+  acrescimo_azeitona decimal(10,2) [not null, default: 0]
+  acrescimo_oregano decimal(10,2) [not null, default: 0]
+  subtotal decimal(10,2) [not null]
+}
+
+Table pizza_ingredientes {
+  id bigint [pk, increment]
+  pizza_id bigint [not null]
+  ingrediente_id smallint [note: 'Nulo quando o ingrediente é personalizado']
+  nome_personalizado varchar(24) [note: 'Preenchido somente para ingrediente personalizado']
+  ordem tinyint [not null, note: 'Posição de 1 a 5 na montagem']
+  acrescimo decimal(10,2) [not null, default: 0]
+
+  indexes {
+    (pizza_id, ordem) [unique]
+  }
+}
+
+Ref: pedidos.id < pizzas.pedido_id
+Ref: tamanhos.id < pizzas.tamanho_id
+Ref: massas.id < pizzas.massa_id
+Ref: molhos.id < pizzas.molho_id
+Ref: pizzas.id < pizza_ingredientes.pizza_id [delete: cascade]
+Ref: ingredientes.id < pizza_ingredientes.ingrediente_id
+

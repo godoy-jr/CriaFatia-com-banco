@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monta Pizza — Estúdio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="brand-mark">🍕</span>MONTA·PIZZA</div>
+  <div class="topbar-side">Projeto Integrador</div>
+</header>
+
+<section class="hero">
+  <p class="hero-kicker">Estúdio de montagem artesanal</p>
+  <h1 class="hero-title">MONTA<span class="dot">.</span>PIZZA</h1>
+  <p class="hero-sub">Escolha o tamanho, a massa, o molho e os recheios. A sua pizza é montada em tempo real na tela.</p>
+</section>
+
+<div class="progress-wrap">
+  <ol class="progress" id="progress">
+    <li data-step="0">01 · Tamanho</li>
+    <li data-step="1">02 · Massa</li>
+    <li data-step="2">03 · Molho</li>
+    <li data-step="3">04 · Recheios</li>
+    <li data-step="4">05 · Azeitona</li>
+    <li data-step="5">06 · Orégano</li>
+    <li data-step="6">07 · Resumo</li>
+  </ol>
+</div>
+
+<main>
+  <div class="container">
+    <div class="layout">
+      <div class="layout-left">
+        <div id="steps" class="steps"></div>
+        <div class="nav">
+          <button id="btn-prev" class="btn btn-ghost" type="button">← Voltar</button>
+          <button id="btn-next" class="btn btn-primary" type="button">Continuar →</button>
+          <button id="btn-print" class="btn btn-primary" type="button" style="display:none">🖨 Imprimir</button>
+          <button id="btn-restart" class="btn btn-ghost" type="button" style="display:none">↻ Novo pedido</button>
+        </div>
+      </div>
+
+      <div class="stage-wrap">
+        <div class="stage-label"><span>Produto</span>/ ao vivo</div>
+        <div class="stage">
+          <div class="stage-ring"></div>
+          <div class="pizza" id="pizza">
+            <div class="pizza-sauce" id="pizza-sauce"></div>
+            <div class="pizza-toppings" id="pizza-toppings"></div>
+            <div class="pizza-olives" id="pizza-olives"></div>
+            <div class="pizza-oregano" id="pizza-oregano"></div>
+            <div class="pizza-cuts" id="pizza-cuts"></div>
+            <div class="pizza-hint" id="pizza-hint"><span class="hint-pizza">🍕</span><span class="hint-text">SUA PIZZA APARECE AQUI</span></div>
+          </div>
+        </div>
+        <div class="pizza-status" id="pizza-status">Escolha o tamanho para começar</div>
+        <ul class="pizza-legend" id="pizza-legend"></ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<section id="comanda-view" class="comanda-wrap" hidden>
+  <div class="comanda" id="comanda"></div>
+</section>
+
+<footer class="footer">Monta Pizza · Projeto Integrador</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
