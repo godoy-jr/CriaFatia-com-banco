@@ -32,10 +32,11 @@ const RECHEIOS = [
 ];
 const MAX_RECHEIOS = 5;
 
+const FOODISH_ENDPOINT = 'https://foodish-api.com/api/images/pizza';
 const PIZZA_IMAGE_FALLBACK = 'assets/pizza-fallback.svg';
-// Só inclua aqui arquivos locais que mostrem claramente o ingrediente indicado.
-// Fotos aleatórias do Foodish nunca devem ser associadas a um sabor específico.
-const FLAVOR_IMAGES = {};
+const PIZZA_IMAGE_CACHE_KEY = 'cria-fatia:menu-photo:v1';
+const PIZZA_IMAGE_CACHE_TTL = 1000 * 60 * 60 * 24 * 30;
+let menuPizzaImage = PIZZA_IMAGE_FALLBACK;
 
 const steps = [
   { id: 'tamanho', title: 'Escolha o tamanho', sub: 'O tamanho que combina com a fome de hoje.' },
@@ -114,16 +115,13 @@ function buildSteps() {
     </section>`).join('');
 }
 
-function flavorImageMarkup(sabor, flavorIndex) {
-  const ingredientWithPhoto = sabor.ingredientes.find(id => FLAVOR_IMAGES[id]);
-  const ownPhoto = ingredientWithPhoto && FLAVOR_IMAGES[ingredientWithPhoto];
-  const src = ownPhoto || PIZZA_IMAGE_FALLBACK;
-  return `<div class="flavor-media">
-    <img src="${src}" alt="${ownPhoto ? `Foto do sabor ${flavorIndex + 1}` : `Ilustração do sabor ${flavorIndex + 1}`}"
+function menuPizzaImageMarkup() {
+  return `<figure class="flavor-menu-photo">
+    <img id="flavor-menu-photo" src="${menuPizzaImage}" alt="Pizza pronta usada como imagem ilustrativa"
       loading="lazy" decoding="async"
-      onerror="this.onerror=null;this.src='${PIZZA_IMAGE_FALLBACK}';this.nextElementSibling.hidden=false">
-    <span class="photo-label" ${ownPhoto ? 'hidden' : ''}>Imagem ilustrativa</span>
-  </div>`;
+      onerror="this.onerror=null;this.src='${PIZZA_IMAGE_FALLBACK}'">
+    <figcaption>Imagem ilustrativa</figcaption>
+  </figure>`;
 }
 
 function optionCard(name, desc, price, value, selected) {
@@ -133,6 +131,56 @@ function optionCard(name, desc, price, value, selected) {
       ${desc ? `<div class="option-desc">${desc}</div>` : ''}
       ${price > 0 ? `<div class="option-price">+ ${fmt(price)}</div>` : ''}
     </div>`;
+}
+
+function readMenuPizzaImageCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PIZZA_IMAGE_CACHE_KEY));
+    if (cached && Number.isFinite(cached.savedAt)
+      && Date.now() >= cached.savedAt
+      && Date.now() - cached.savedAt < PIZZA_IMAGE_CACHE_TTL
+      && typeof cached.image === 'string'
+      && /^https:\/\/foodish-api\.com\/images\/pizza\/[^\s"<>]+$/.test(cached.image)) {
+      return cached.image;
+    }
+  } catch (_) { /* O SVG local continua disponível sem localStorage. */ }
+  return null;
+}
+
+function saveMenuPizzaImageCache(image) {
+  try {
+    localStorage.setItem(PIZZA_IMAGE_CACHE_KEY, JSON.stringify({ image, savedAt: Date.now() }));
+  } catch (_) { /* O SVG local continua disponível sem localStorage. */ }
+}
+
+function updateMenuPizzaImage() {
+  const image = document.querySelector('#flavor-menu-photo');
+  if (image && image.src !== menuPizzaImage) image.src = menuPizzaImage;
+}
+
+async function loadMenuPizzaImage() {
+  const cached = readMenuPizzaImageCache();
+  if (cached) {
+    menuPizzaImage = cached;
+    updateMenuPizzaImage();
+    return;
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetch(FOODISH_ENDPOINT, {
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    if (typeof data.image !== 'string'
+      || !/^https:\/\/foodish-api\.com\/images\/pizza\/[^\s"<>]+$/.test(data.image)) return;
+    menuPizzaImage = data.image;
+    saveMenuPizzaImageCache(menuPizzaImage);
+    updateMenuPizzaImage();
+  } catch (_) { /* Falha de rede: mantém a ilustração local. */ }
+  finally { clearTimeout(timeout); }
 }
 
 function renderStep() {
@@ -145,18 +193,16 @@ function renderStep() {
     massa: `<div class="options-grid">${sel(MASSAS, 'massa').join('')}</div>`,
     molho: `<div class="options-grid">${sel(MOLHOS, 'molho').join('')}</div>`,
     sabores: `
+      ${menuPizzaImageMarkup()}
       <div class="flavor-count" aria-label="Quantidade de sabores">
         ${[1, 2, 3].map(amount => `<button type="button" class="flavor-count-btn ${state.quantidadeSabores === amount ? 'selected' : ''}" data-flavor-count="${amount}">${amount} sabor${amount > 1 ? 'es' : ''}</button>`).join('')}
       </div>
       <div class="flavors-builder">
         ${state.sabores.map((sabor, flavorIndex) => `
           <section class="flavor-section" data-flavor="${flavorIndex}">
-            <div class="flavor-overview">
-              ${flavorImageMarkup(sabor, flavorIndex)}
-              <div class="flavor-head">
-                <div><h3>Sabor ${flavorIndex + 1}</h3>${sabor.ingredientes.length ? `<p class="flavor-ingredients">${sabor.ingredientes.map(ingredienteLabel).join(' · ')}</p>` : '<p class="flavor-ingredients empty">Nenhum ingrediente escolhido</p>'}</div>
-                <span class="counter"><b>${sabor.ingredientes.length}</b>/5</span>
-              </div>
+            <div class="flavor-head">
+              <div><h3>Sabor ${flavorIndex + 1}</h3>${sabor.ingredientes.length ? `<p class="flavor-ingredients">${sabor.ingredientes.map(ingredienteLabel).join(' · ')}</p>` : '<p class="flavor-ingredients empty">Nenhum ingrediente escolhido</p>'}</div>
+              <span class="counter"><b>${sabor.ingredientes.length}</b>/5</span>
             </div>
             <div class="toppings-grid">
               ${RECHEIOS.map(r => `<button type="button" class="topping-choice ${sabor.ingredientes.includes(r.id) ? 'selected' : ''}" data-r="${r.id}" data-flavor="${flavorIndex}" aria-pressed="${sabor.ingredientes.includes(r.id)}"><span class="topping-name">${r.label}</span></button>`).join('')}
@@ -424,3 +470,4 @@ $('#btn-restart').addEventListener('click', () => {
 
 buildSteps();
 goTo(0);
+loadMenuPizzaImage();
