@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monta Pizza — Estúdio</title>
+<title>Cria Fatia — Pizzaria</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -12,14 +12,14 @@
 <body>
 
 <header class="topbar">
-  <div class="brand"><span class="brand-mark">🍕</span>MONTA·PIZZA</div>
-  <div class="topbar-side">Projeto Integrador</div>
+  <div class="brand"><span class="brand-mark" aria-hidden="true">CF</span>CRIA·FATIA</div>
+  <div class="topbar-side">Pizzaria</div>
 </header>
 
 <section class="hero">
-  <p class="hero-kicker">Estúdio de montagem artesanal</p>
-  <h1 class="hero-title">MONTA<span class="dot">.</span>PIZZA</h1>
-  <p class="hero-sub">Escolha o tamanho, a massa, o molho e os recheios. A sua pizza é montada em tempo real na tela.</p>
+  <p class="hero-kicker">Cardápio da pizzaria</p>
+  <h1 class="hero-title">Monte sua <span class="dot">pizza</span></h1>
+  <p class="hero-sub">Escolha o tamanho, a massa, o molho e monte até três sabores. A sua pizza é criada em tempo real na tela.</p>
 </section>
 
 <div class="progress-wrap">
@@ -27,7 +27,7 @@
     <li data-step="0">01 · Tamanho</li>
     <li data-step="1">02 · Massa</li>
     <li data-step="2">03 · Molho</li>
-    <li data-step="3">04 · Recheios</li>
+    <li data-step="3">04 · Sabores</li>
     <li data-step="4">05 · Azeitona</li>
     <li data-step="5">06 · Orégano</li>
     <li data-step="6">07 · Resumo</li>
@@ -48,7 +48,7 @@
       </div>
 
       <div class="stage-wrap">
-        <div class="stage-label"><span>Produto</span>/ ao vivo</div>
+        <div class="stage-label"><span>Sua pizza</span> · Prévia</div>
         <div class="stage">
           <div class="stage-ring"></div>
           <div class="pizza" id="pizza">
@@ -57,7 +57,7 @@
             <div class="pizza-olives" id="pizza-olives"></div>
             <div class="pizza-oregano" id="pizza-oregano"></div>
             <div class="pizza-cuts" id="pizza-cuts"></div>
-            <div class="pizza-hint" id="pizza-hint"><span class="hint-pizza">🍕</span><span class="hint-text">SUA PIZZA APARECE AQUI</span></div>
+            <div class="pizza-hint" id="pizza-hint"><span class="hint-kicker">PRÉVIA ARTESANAL</span><span class="hint-text">SUA PIZZA APARECE AQUI</span></div>
           </div>
         </div>
         <div class="pizza-status" id="pizza-status">Escolha o tamanho para começar</div>
@@ -71,7 +71,7 @@
   <div class="comanda" id="comanda"></div>
 </section>
 
-<footer class="footer">Monta Pizza · Projeto Integrador</footer>
+<footer class="footer">Cria Fatia · Projeto Integrador</footer>
 
 <script src="script.js"></script>
 </body>

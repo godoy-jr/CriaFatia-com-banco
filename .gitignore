@@ -3,3 +3,5 @@ Thumbs.db
 .vscode/
 desktop.png
 mobile.png
+.chrome-*/
+qa-*.png
